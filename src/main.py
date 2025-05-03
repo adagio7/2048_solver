@@ -7,10 +7,10 @@ BOARD_BG_COLOUR = (187, 173, 160)
 GRID_BORDER_COLOUR  = (50,  50,  50)
 
 GRID_SIZE = 4
-CELL_PADDING = 10
-BOARD_PADDING = 20
+CELL_PADDING = 5
+BOARD_PADDING = 50
 
-CELL_SIZE = (WIDTH -  2 * BOARD_PADDING - (GRID_SIZE + 1) * CELL_PADDING) // GRID_SIZE
+CELL_SIZE = (WIDTH -  2 * BOARD_PADDING - (GRID_SIZE - 1) * CELL_PADDING) // GRID_SIZE
 
 if __name__ == "__main__":
     pygame.init()
@@ -24,9 +24,6 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
 
-        # Based on the grid size and padding
-        total_grid_width  = GRID_SIZE * CELL_SIZE + (GRID_SIZE + 1) * CELL_PADDING
-
         x0 = BOARD_PADDING
         y0 = BOARD_PADDING
 
@@ -34,7 +31,7 @@ if __name__ == "__main__":
             for j in range(GRID_SIZE):
                 x = x0 + i * (CELL_SIZE + CELL_PADDING)
                 y = y0 + j * (CELL_SIZE + CELL_PADDING)
-                pygame.draw.rect(screen, GRID_BORDER_COLOUR, (x, y, CELL_SIZE, CELL_SIZE), 1)
+                pygame.draw.rect(screen, CELL_COLOUR, (x, y, CELL_SIZE, CELL_SIZE), border_radius=10)
 
         # draw the cells
         pygame.display.flip()
