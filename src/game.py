@@ -9,14 +9,15 @@ class Moves:
 
 class Game:
     SPAWN_2_PROB = 0.9
+    EMPTY_CELL_CONTENT = 0
 
     def __init__(self, size=GRID_SIZE):
         self.size = size
-        self.grid = [[0] * self.size for _ in range(self.size)]
+        self.grid = [[self.EMPTY_CELL_CONTENT] * self.size for _ in range(self.size)]
         self.score = 0
         self.game_over = False
 
-        # Each game starts with two tiles
+        # Initialize the grid with two random tiles
         self._add_random_tile()
         self._add_random_tile()
 
@@ -27,7 +28,7 @@ class Game:
         empty_cells = []
         for r in range(self.size):
             for c in range(self.size):
-                if self.grid[r][c] == 0:
+                if self.grid[r][c] == self.EMPTY_CELL_CONTENT:
                     empty_cells.append((r, c))
         return empty_cells
 
@@ -38,10 +39,10 @@ class Game:
         Returns if a tile was added.
         If no tiles can be added, set game_over to True.
         """
-        empty_cells = self.get_empty_cells()
+        empty_cells = self._get_empty_cells()
 
         if not empty_cells:
-            self.game_over = True
+            # self.game_over = True # Game over is checked by check_game_over()
             return False
 
         (r, c) = random.choice(empty_cells)
@@ -52,35 +53,6 @@ class Game:
     def __str__(self):
         """ For debugging purposes """
         return '\n'.join(['\t'.join(map(str, row)) for row in self.grid])
-
-    # --- Move Logic (to be implemented) ---
-    def _slide_left(self, row):
-        """Slides tiles in a single row to the left and merges them."""
-        # new_row = [i for i in row if i != 0]
-        # moves = {} # To track original to new positions for animation
-        # merges = set() # To track merged cells for animation
-
-        # # Slide
-        # for i in range(len(new_row)):
-        #     # This part needs to map original indices to new_row indices if we want to track moves
-        #     pass # Placeholder for now
-
-        # # Merge
-        # i = 0
-        # while i < len(new_row) - 1:
-        #     if new_row[i] == new_row[i+1]:
-        #         new_row[i] *= 2
-        #         self.score += new_row[i]
-        #         # merges.add() # Add the new position of the merged tile
-        #         new_row.pop(i+1)
-        #     i += 1
-        
-        # # Pad with zeros
-        # while len(new_row) < self.size:
-        #     new_row.append(0)
-        
-        # # For now, just return the processed row, moves/merges will be complex
-        # return new_row, {}, set()
 
 
     def move(self, direction: str):
@@ -192,24 +164,20 @@ class Game:
         for r in range(self.size):
             for c in range(self.size):
                 val = self.grid[r][c]
+                if val == self.EMPTY_CELL_CONTENT: # Should not happen if _get_empty_cells is false, but good check
+                    return False
                 # Check right
                 if c + 1 < self.size and self.grid[r][c+1] == val:
                     return False
                 # Check down
                 if r + 1 < self.size and self.grid[r+1][c] == val:
                     return False
-
-        self.game_over = True
+        # self.game_over = True # Game.move will set this if applicable
         return True
 
 # Example usage (for testing, can be removed later)
 if __name__ == '__main__':
     game = Game()
     print("Initial Grid:")
+    game._add_random_tile()
     print(game)
-    # game.move('left')
-    # print("\nAfter move left:")
-    # print(game)
-    # game.move('up')
-    # print("\nAfter move up:")
-    # print(game)
