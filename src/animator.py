@@ -73,13 +73,11 @@ class Animator:
     def start_pop(
         self,
         grid: list[list[int]],
-        merges: set[tuple[int,int]],
+        merges: dict[tuple[int,int], int],
         duration: float = 100
     ):
         self.pops.clear()
-        for coords in merges:
-            value = grid[coords[0]][coords[1]]
-
+        for coords, value in merges.items():
             # Only interested in non-empty cells
             if value:
                 self.pops.append(

@@ -230,10 +230,3 @@ class Game:
                     return False
         # self.game_over = True # Game.move will set this if applicable
         return True
-
-# Example usage (for testing, can be removed later)
-if __name__ == '__main__':
-    game = Game()
-    print("Initial Grid:")
-    game._add_random_tile()
-    print(game)
