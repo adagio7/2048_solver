@@ -1,11 +1,8 @@
 import random
-from .constants import GRID_SIZE
 
-class Moves:
-    LEFT   = 'left'
-    RIGHT  = 'right'
-    UP     = 'up'
-    DOWN   = 'down'
+from .constants import GRID_SIZE
+from .models import Moves
+
 
 class Game:
     SPAWN_2_PROB = 0.9
@@ -55,69 +52,113 @@ class Game:
         return '\n'.join(['\t'.join(map(str, row)) for row in self.grid])
 
 
-    def move(self, direction: str):
+    def move(self, direction: Moves):
         """
         Handles a move in the specified direction ('left', 'right', 'up', 'down').
-        Returns a tuple: (moved: bool, animation_moves: dict, animation_merges: set)
+        Returns a tuple: (moved: bool, animation_moves: dict, animation_merges: dict, score_delta: int)
         animation_moves: dict mapping (old_r, old_c) to (new_r, new_c)
-        animation_merges: set of (r,c) where merges occurred
+        animation_merges: dict mapping (r,c) to merged value
         """
-        # original_grid = [row[:] for row in self.grid]
-        # animation_moves = {}
-        # animation_merges = set()
-        # moved = False
+        animation_moves = {}
+        animation_merges = {}
+        moved = False
+        score_delta = 0
 
-        # if direction == 'left':
-        #     for r in range(self.size):
-        #         new_row, row_moves, row_merges = self._process_row_left(self.grid[r])
-        #         if self.grid[r] != new_row:
-        #             moved = True
-        #         self.grid[r] = new_row
-        #         # Update animation_moves and animation_merges based on row_moves, row_merges
-        #         # This requires careful index tracking.
+        match direction:
+            case Moves.LEFT:
+                for r in range(self.size):
+                    new_row, slides_map, merges_map, row_score_delta = self._process_row_left(self.grid[r])
+                    if self.grid[r] != new_row:
+                        moved = True
+                    
+                    # Update animation data
+                    for old_c, new_c in slides_map.items():
+                        animation_moves[(r, old_c)] = (r, new_c)
 
-        # elif direction == 'right':
-        #     for r in range(self.size):
-        #         original_row = self.grid[r][:]
-        #         reversed_row = original_row[::-1]
-        #         processed_reversed_row, _, _ = self._process_row_left(reversed_row) # Re-use left logic
-        #         self.grid[r] = processed_reversed_row[::-1]
-        #         if original_row != self.grid[r]:
-        #             moved = True
-        #         # Update animation_moves and animation_merges
+                    for merge_c, merge_val in merges_map.items():
+                        animation_merges[(r, merge_c)] = merge_val
+                        
+                    self.grid[r] = new_row
+                    score_delta += row_score_delta
 
-        # elif direction == 'up':
-        #     # Transpose, process left, then transpose back
-        #     transposed_grid = [list(col) for col in zip(*self.grid)]
-        #     for c in range(self.size):
-        #         original_col_as_row = transposed_grid[c][:]
-        #         processed_col_as_row, _, _ = self._process_row_left(original_col_as_row)
-        #         transposed_grid[c] = processed_col_as_row
-        #         if original_col_as_row != transposed_grid[c]:
-        #             moved = True
-        #     self.grid = [list(row) for row in zip(*transposed_grid)]
-        #     # Update animation_moves and animation_merges
+            case Moves.RIGHT:
+                for r in range(self.size):
+                    # Reverse the row, process as left, then reverse back
+                    original_row = self.grid[r][:]
+                    reversed_row = original_row[::-1]
+                    processed_reversed_row, slides_map, merges_map, row_score_delta = self._process_row_left(reversed_row)
+                    new_row = processed_reversed_row[::-1]
+                    
+                    if original_row != new_row:
+                        moved = True
+                        
+                    # Update animation data with adjusted indexes for right direction
+                    for old_c, new_c in slides_map.items():
+                        adjusted_old_c = self.size - 1 - old_c
+                        adjusted_new_c = self.size - 1 - new_c
+                        animation_moves[(r, adjusted_old_c)] = (r, adjusted_new_c)
+                        
+                    for merge_c, merge_val in merges_map.items():
+                        adjusted_merge_c = self.size - 1 - merge_c
+                        animation_merges[(r, adjusted_merge_c)] = merge_val
+                        
+                    self.grid[r] = new_row
+                    score_delta += row_score_delta
 
-        # elif direction == 'down':
-        #     # Transpose, process right (reverse, process left, reverse), then transpose back
-        #     transposed_grid = [list(col) for col in zip(*self.grid)]
-        #     for c in range(self.size):
-        #         original_col_as_row = transposed_grid[c][:]
-        #         reversed_col_as_row = original_col_as_row[::-1]
-        #         processed_reversed_col_as_row, _, _ = self._process_row_left(reversed_col_as_row)
-        #         transposed_grid[c] = processed_reversed_col_as_row[::-1]
-        #         if original_col_as_row != transposed_grid[c]:
-        #             moved = True
-        #     self.grid = [list(row) for row in zip(*transposed_grid)]
-        #     # Update animation_moves and animation_merges
+            case Moves.UP:
+                # Transpose grid, process each column as a row, then transpose back
+                transposed_grid = [list(col) for col in zip(*self.grid)]
+                for c in range(self.size):
+                    original_col_as_row = transposed_grid[c][:]
+                    processed_col_as_row, slides_map, merges_map, row_score_delta = self._process_row_left(original_col_as_row)
+                    
+                    if original_col_as_row != processed_col_as_row:
+                        moved = True
+                        
+                    # Update animation data with adjusted indexes for up direction
+                    for old_r, new_r in slides_map.items():
+                        animation_moves[(old_r, c)] = (new_r, c)
+                        
+                    for merge_r, merge_val in merges_map.items():
+                        animation_merges[(merge_r, c)] = merge_val
+                        
+                    transposed_grid[c] = processed_col_as_row
+                    score_delta += row_score_delta
+                    
+                self.grid = [list(row) for row in zip(*transposed_grid)]
 
-        # if moved:
-        #     self._add_random_tile()
-        
-        # # For now, the animation details are placeholders
-        # # A more robust way to get animation_moves and animation_merges is needed.
-        # # This often involves comparing the grid before and after the slide/merge pass for each direction.
-        # return moved, {}, set() # Placeholder for animation data
+            case Moves.DOWN:
+                # Transpose grid, reverse rows, process as left, reverse back, transpose back
+                transposed_grid = [list(col) for col in zip(*self.grid)]
+                for c in range(self.size):
+                    original_col_as_row = transposed_grid[c][:]
+                    reversed_col_as_row = original_col_as_row[::-1]
+                    processed_reversed_col, slides_map, merges_map, row_score_delta = self._process_row_left(reversed_col_as_row)
+                    transposed_grid[c] = processed_reversed_col[::-1]
+                    
+                    if original_col_as_row != transposed_grid[c]:
+                        moved = True
+                        
+                    # Update animation data with adjusted indexes for down direction
+                    for old_r, new_r in slides_map.items():
+                        # Adjust row indexes since we reversed
+                        adjusted_old_r = self.size - 1 - old_r
+                        adjusted_new_r = self.size - 1 - new_r
+                        animation_moves[(adjusted_old_r, c)] = (adjusted_new_r, c)
+                        
+                    for merge_r, merge_val in merges_map.items():
+                        adjusted_merge_r = self.size - 1 - merge_r
+                        animation_merges[(adjusted_merge_r, c)] = merge_val
+                        
+                    score_delta += row_score_delta
+                
+                self.grid = [list(row) for row in zip(*transposed_grid)]
+
+        if moved:
+            self._add_random_tile()
+            self.score += score_delta
+            
+        return moved, animation_moves, animation_merges, score_delta
 
     def _process_row_left(self, line: list[int]) -> tuple[list[int], dict[int, int], dict[int, int], int]:
         """
@@ -136,8 +177,8 @@ class Game:
 
         processed_line_values = [] 
         
-        line_slides_map = {}  
-        line_merges_map = {}  
+        line_slides_map = {}
+        line_merges_map = {}
         score_delta = 0
         
         i = 0
