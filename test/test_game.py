@@ -1,62 +1,71 @@
 import pytest
 from src.game import Game, Moves
-from src.constants import GRID_SIZE
 
-# Make sure constants.py has GRID_SIZE defined, e.g., GRID_SIZE = 4
 
 class TestGameLogic:
+    GRID_SIZE = 4
 
     def test_process_row_left_no_move(self):
         # Given
-        game = Game(size=4)
+        game = Game(size=self.GRID_SIZE)
         line = [2, 4, 8, 16]
         expected_line = [2, 4, 8, 16]
 
         # When
-        processed_line, slides, merges = game._process_row_left(list(line))
+        processed_line, slides, merges, score_delta = game._process_row_left(line)
 
         # Then
         assert processed_line == expected_line
         assert not slides  # No slides
         assert not merges  # No merges
-        assert game.score == 0  # No score change
+        assert score_delta == 0  # No score change
 
     def test_process_row_left_simple_slide(self):
         # Given
-        game = Game(size=4)
+        game = Game(size=self.GRID_SIZE)
         line = [0, 2, 0, 4]
         expected_line = [2, 4, 0, 0]
         expected_slides = {1: 0, 3: 1}
 
         # When
-        processed_line, slides, merges = game._process_row_left(list(line))
+        processed_line, slides, merges, score_delta = game._process_row_left(line)
 
         # Then
         assert processed_line == expected_line
         assert slides == expected_slides
         assert not merges
+        assert score_delta == 0
 
-    # def test_process_row_left_slide_with_gap_at_end(self):
-    #     game = Game(size=4)
-    #     line = [2,0,0,0]
-    #     expected_line = [2,0,0,0]
-    #     expected_slides = {} # No actual slide if it starts at the leftmost available spot
-    #     processed_line, slides, merges, score_delta = game._process_row_left(list(line))
-    #     assert processed_line == expected_line
-    #     assert slides == expected_slides
-    #     assert not merges
-    #     assert score_delta == 0
+    def test_process_row_left_slide_with_gap_at_end(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        line = [2,0,0,0]
+        expected_line = [2,0,0,0]
 
-    # def test_process_row_left_slide_all_to_left(self):
-    #     game = Game(size=4)
-    #     line = [0,0,0,2]
-    #     expected_line = [2,0,0,0]
-    #     expected_slides = {3:0}
-    #     processed_line, slides, merges, score_delta = game._process_row_left(list(line))
-    #     assert processed_line == expected_line
-    #     assert slides == expected_slides
-    #     assert not merges
-    #     assert score_delta == 0
+        # When
+        processed_line, slides, merges, score_delta = game._process_row_left(list(line))
+
+        # Then
+        assert processed_line == expected_line
+        assert not slides
+        assert not merges
+        assert score_delta == 0
+
+    def test_process_row_left_slide_all_to_left(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        line = [0,0,0,2]
+        expected_line = [2,0,0,0]
+        expected_slides = {3:0}
+
+        # When
+        processed_line, slides, merges, score_delta = game._process_row_left(list(line))
+
+        # Then
+        assert processed_line == expected_line
+        assert slides == expected_slides
+        assert not merges
+        assert score_delta == 0
 
 
     # def test_process_row_left_simple_merge(self):

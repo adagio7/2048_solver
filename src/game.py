@@ -119,42 +119,57 @@ class Game:
         # # This often involves comparing the grid before and after the slide/merge pass for each direction.
         # return moved, {}, set() # Placeholder for animation data
 
-    def _process_row_left(self, row: list[int]):
+    def _process_row_left(self, line: list[int]) -> tuple[list[int], dict[int, int], dict[int, int], int]:
         """
-        Processes a single row for a left move: slides tiles, merges, and returns the new row.
-        This is a simplified version. For animation, we'd need to track original positions.
-        Returns: (new_row, moves_in_row, merges_in_row)
-        """
-        # # 1. Compact (remove zeros)
-        # compacted_row = [val for val in row if val != 0]
-        
-        # # 2. Merge
-        # merged_row = []
-        # merges_occurred_indices = set() # Indices in merged_row
-        # i = 0
-        # while i < len(compacted_row):
-        #     if i + 1 < len(compacted_row) and compacted_row[i] == compacted_row[i+1]:
-        #         merged_value = compacted_row[i] * 2
-        #         merged_row.append(merged_value)
-        #         self.score += merged_value
-        #         merges_occurred_indices.add(len(merged_row) - 1)
-        #         i += 2 # Skip next element as it's merged
-        #     else:
-        #         merged_row.append(compacted_row[i])
-        #         i += 1
-        
-        # # 3. Pad with zeros
-        # final_row = merged_row + [0] * (self.size - len(merged_row))
-        
-        # # For detailed animation, we'd compare `row` with `final_row`
-        # # and trace back where each tile came from and where merges happened.
-        # # This is non-trivial.
-        
-        # # Placeholder for detailed move/merge tracking for animation
-        # animation_row_moves = {} 
-        # animation_row_merges = set()
+        Processes a single row for a left move:
+            slides tiles, merges, and returns the new line.
 
-        # return final_row, animation_row_moves, animation_row_merges
+        Returns: (new_line, slides_map, merges_map, score_delta)
+        """
+        # TODO: quite messy, refactor
+
+        # Store (value, original_index) for tiles that are not empty
+        tiles_with_original_indices = []
+        for i, val in enumerate(line):
+            if val != self.EMPTY_CELL_CONTENT:
+                tiles_with_original_indices.append((val, i))
+
+        processed_line_values = [] 
+        
+        line_slides_map = {}  
+        line_merges_map = {}  
+        score_delta = 0
+        
+        i = 0
+        current_new_idx = 0 
+        
+        while i < len(tiles_with_original_indices):
+            val1, orig_idx1 = tiles_with_original_indices[i]
+            
+            if i + 1 < len(tiles_with_original_indices) and tiles_with_original_indices[i+1][0] == val1:
+                _, orig_idx2 = tiles_with_original_indices[i+1]
+
+                merged_val = val1 * 2
+                score_delta += merged_val
+                processed_line_values.append(merged_val)
+                
+                line_slides_map[orig_idx1] = current_new_idx
+                line_slides_map[orig_idx2] = current_new_idx
+                line_merges_map[current_new_idx] = merged_val
+                
+                i += 2
+            else:
+                processed_line_values.append(val1)
+                if orig_idx1 != current_new_idx: # Record if it actually moved
+                    line_slides_map[orig_idx1] = current_new_idx
+
+                i += 1
+            current_new_idx += 1
+
+        # Rebuild the line for the grid
+        processed_line_values += [self.EMPTY_CELL_CONTENT] * (self.size - len(processed_line_values))
+
+        return processed_line_values, line_slides_map, line_merges_map, score_delta
 
     def check_game_over(self) -> bool:
         """ Checks if there are any possible moves left. """
