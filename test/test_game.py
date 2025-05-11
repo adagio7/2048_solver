@@ -68,99 +68,95 @@ class TestGameLogic:
         assert score_delta == 0
 
 
-    # def test_process_row_left_simple_merge(self):
-    #     game = Game(size=4)
-    #     line = [2, 2, 0, 0]
-    #     expected_line = [4, 0, 0, 0]
-    #     # Original: 2 at 0, 2 at 1
-    #     # New: 4 at 0
-    #     expected_slides = {0: 0, 1: 0} # Both original 2s slide to index 0
-    #     expected_merges = {0: 4}      # Merge result 4 is at index 0
-    #     processed_line, slides, merges, score_delta = game._process_row_left(list(line))
-    #     assert processed_line == expected_line
-    #     assert slides == expected_slides
-    #     assert merges == expected_merges
-    #     assert score_delta == 4
+    def test_process_row_left_simple_merge(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        line = [2, 2, 0, 0]
+        expected_line = [4, 0, 0, 0]
+        expected_slides = {0: 0, 1: 0} 
+        expected_merges = {0: 4}
 
-    # def test_process_row_left_merge_with_slide(self):
-    #     game = Game(size=4)
-    #     line = [0, 2, 2, 0]
-    #     expected_line = [4, 0, 0, 0]
-    #     # Original: 2 at 1, 2 at 2
-    #     # New: 4 at 0
-    #     expected_slides = {1: 0, 2: 0}
-    #     expected_merges = {0: 4}
-    #     processed_line, slides, merges, score_delta = game._process_row_left(list(line))
-    #     assert processed_line == expected_line
-    #     assert slides == expected_slides
-    #     assert merges == expected_merges
-    #     assert score_delta == 4
+        # When
+        processed_line, slides, merges, score_delta = game._process_row_left(list(line))
 
-    # def test_process_row_left_multiple_merges(self):
-    #     game = Game(size=4)
-    #     line = [2, 2, 4, 4]
-    #     expected_line = [4, 8, 0, 0]
-    #     # Merge 1: 2s at 0,1 -> 4 at 0. Slides: {0:0, 1:0}. Merges: {0:4}
-    #     # Merge 2: 4s at 2,3 -> 8 at 1. Slides: {2:1, 3:1}. Merges: {1:8}
-    #     expected_slides = {0: 0, 1: 0, 2: 1, 3: 1}
-    #     expected_merges = {0: 4, 1: 8}
-    #     processed_line, slides, merges, score_delta = game._process_row_left(list(line))
-    #     assert processed_line == expected_line
-    #     assert slides == expected_slides
-    #     assert merges == expected_merges
-    #     assert score_delta == (4 + 8)
+        # Then
+        assert processed_line == expected_line
+        assert slides == expected_slides
+        assert merges == expected_merges
+        assert score_delta == 4
 
-    # def test_process_row_left_cannot_merge_three(self):
-    #     game = Game(size=4)
-    #     line = [2, 2, 2, 0]
-    #     expected_line = [4, 2, 0, 0]
-    #     # Merge: 2s at 0,1 -> 4 at 0. Slides: {0:0, 1:0}. Merges: {0:4}
-    #     # Slide: 2 at 2 -> 2 at 1. Slides: {2:1}
-    #     expected_slides = {0: 0, 1: 0, 2: 1}
-    #     expected_merges = {0: 4}
-    #     processed_line, slides, merges, score_delta = game._process_row_left(list(line))
-    #     assert processed_line == expected_line
-    #     assert slides == expected_slides
-    #     assert merges == expected_merges
-    #     assert score_delta == 4
+    def test_process_row_left_merge_with_slide(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        line = [0, 2, 2, 0]
+        expected_line = [4, 0, 0, 0]
+        expected_slides = {1: 0, 2: 0}
+        expected_merges = {0: 4}
+
+        # When
+        processed_line, slides, merges, score_delta = game._process_row_left(list(line))
+
+        # Then
+        assert processed_line == expected_line
+        assert slides == expected_slides
+        assert merges == expected_merges
+        assert score_delta == 4
+
+    def test_process_row_left_multiple_merges(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        line = [2, 2, 4, 4]
+        expected_line = [4, 8, 0, 0]
+
+        # Merge 1: 2s at 0,1 -> 4 at 0. Slides: {0:0, 1:0}. Merges: {0:4}
+        # Merge 2: 4s at 2,3 -> 8 at 1. Slides: {2:1, 3:1}. Merges: {1:8}
+        expected_slides = {0: 0, 1: 0, 2: 1, 3: 1}
+        expected_merges = {0: 4, 1: 8}
+
+        # When
+        processed_line, slides, merges, score_delta = game._process_row_left(list(line))
+
+        # Then
+        assert processed_line == expected_line
+        assert slides == expected_slides
+        assert merges == expected_merges
+        assert score_delta == (4 + 8)
+
+    def test_process_row_left_cannot_merge_three(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        line = [2, 2, 2, 0]
+        expected_line = [4, 2, 0, 0]
+        expected_slides = {0: 0, 1: 0, 2: 1}
+        expected_merges = {0: 4}
+
+        # When
+        processed_line, slides, merges, score_delta = game._process_row_left(list(line))
+
+        # Then
+        assert processed_line == expected_line
+        assert slides == expected_slides
+        assert merges == expected_merges
+        assert score_delta == 4
         
-    # def test_process_row_left_complex_case(self):
-    #     game = Game(size=4)
-    #     line = [0, 2, 2, 4, 0, 4, 8, 8] # Assuming size 8 for this test line
-    #     game_temp = Game(size=8) # Create a temp game with larger size for this line
-    #     expected_line = [4, 8, 16, 0, 0, 0, 0, 0]
-    #     # (0,2,2,4,0,4,8,8)
-    #     # Tiles with original indices: (2,1), (2,2), (4,3), (4,5), (8,6), (8,7)
-    #     # Merge (2,1) (2,2) -> (4,0). Slides: {1:0, 2:0}. Merges: {0:4}
-    #     # Next is (4,3). It cannot merge with (4,0). So (4,3) slides to 1. Slides: {3:1}
-    #     # Next is (4,5). It merges with (4,3) which is now at index 1. (4,5) and (4,3) -> (8,1). Slides: {3:1 (already there), 5:1}. Merges: {1:8}
-    #     # This interpretation is tricky. The rule is usually sequential.
-    #     # Let's re-evaluate based on standard 2048:
-    #     # [0, 2, 2, 4, 0, 4, 8, 8]
-    #     # Compacted: [(2,1), (2,2), (4,3), (4,5), (8,6), (8,7)]
-    #     # 1. (2,1) and (2,2) merge -> 4 at new_idx 0. Slides: {1:0, 2:0}. Merges: {0:4}. Score += 4
-    #     #    processed_line_values: [(4, [1,2])]
-    #     # 2. Next non-merged is (4,3). It cannot merge with the 4 at new_idx 0. So (4,3) slides to new_idx 1. Slides: {3:1}.
-    #     #    processed_line_values: [(4, [1,2]), (4, [3])]
-    #     # 3. Next non-merged is (4,5). It cannot merge with (4,3) at new_idx 1. So (4,5) slides to new_idx 2. Slides: {5:2}.
-    #     #    processed_line_values: [(4, [1,2]), (4, [3]), (4, [5])]
-    #     # 4. Next non-merged is (8,6) and (8,7). They merge -> 16 at new_idx 3. Slides: {6:3, 7:3}. Merges: {3:16}. Score += 16
-    #     #    processed_line_values: [(4, [1,2]), (4, [3]), (4, [5]), (16, [6,7])]
-    #     # Expected line: [4, 4, 4, 16, 0, 0, 0, 0]
-    #     # Expected slides: {1:0, 2:0, 3:1, 5:2, 6:3, 7:3}
-    #     # Expected merges: {0:4, 3:16}
-    #     # Score: 20
+    def test_process_row_left_complex_case(self):
+        # Given
+        game = Game(size=8)
+        line = [0, 2, 2, 4, 0, 4, 8, 8]
+        expected_line = [4, 8, 16, 0, 0, 0, 0, 0]
 
-    #     expected_line_actual = [4, 4, 4, 16, 0, 0, 0, 0]
-    #     expected_slides_actual = {1:0, 2:0, 3:1, 5:2, 6:3, 7:3}
-    #     expected_merges_actual = {0:4, 3:16}
-    #     score_delta_actual = 20
+        expected_slides_actual = {1:0, 2:0, 3:1, 5:1, 6:2, 7:2}
+        expected_merges_actual = {0:4, 1:8, 2:16}
+        score_delta_actual = (4 + 8 + 16)
 
-    #     processed_line, slides, merges, score_delta = game_temp._process_row_left(list(line))
-    #     assert processed_line == expected_line_actual
-    #     assert slides == expected_slides_actual
-    #     assert merges == expected_merges_actual
-    #     assert score_delta == score_delta_actual
+        # When
+        processed_line, slides, merges, score_delta = game._process_row_left(list(line))
+
+        # Then
+        assert processed_line == expected_line
+        assert slides == expected_slides_actual
+        assert merges == expected_merges_actual
+        assert score_delta == score_delta_actual
 
     # def test_move_left_simple(self):
     #     game = Game(size=4)
