@@ -158,6 +158,214 @@ class TestGameLogic:
         assert merges == expected_merges_actual
         assert score_delta == score_delta_actual
 
+    def test_move_left_no_move(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [2, 4, 8, 16],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        game.score = 0
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.LEFT)
+
+        # Then
+        assert moved is False
+        assert game.grid == [
+            [2, 4, 8, 16],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        assert game.score == 0
+        assert slides == {}
+        assert merges == {}
+
+    def test_move_left_no_move(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [2, 4, 8, 16],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        game.score = 0
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.LEFT)
+
+        # Then
+        assert moved is False
+        assert game.grid == [
+            [2, 4, 8, 16],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        assert game.score == 0
+        assert slides == {}
+        assert merges == {}
+
+    def test_move_right_no_move(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [2, 4, 8, 16],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        game.score = 0
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.RIGHT)
+
+        # Then
+        assert moved is False
+        assert game.grid == [
+            [2, 4, 8, 16],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        assert game.score == 0
+        assert slides == {}
+        assert merges == {}
+    def test_move_up_no_move(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [2, 4, 8, 16],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        game.score = 0
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.UP)
+
+        # Then
+        assert moved is False
+        assert game.grid == [
+            [2, 4, 8, 16],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+        ]
+        assert game.score == 0
+        assert slides == {}
+        assert merges == {}
+
+    def test_move_down_no_move(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [2, 4, 8, 16],
+        ]
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.DOWN)
+
+        # Then
+        assert moved is False
+        assert game.grid == [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [2, 4, 8, 16],
+        ]
+        assert score_delta == 0
+        assert slides == {}
+        assert merges == {}
+
+    def test_move_left_simple(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [2, 2, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.LEFT)
+
+        # Then
+        assert moved is True
+        assert game.grid[0][0] == 4
+        assert score_delta == 4
+        assert slides == {(0, 0): (0, 0), (0, 1): (0, 0)}  # Original (0,0) and (0,1) both move to (0,0)
+        assert merges == {(0, 0): 4}
+
+    def test_move_right_simple_merge(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [2, 2, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.RIGHT)
+
+        # Then
+        assert moved is True
+        assert game.grid[0][3] == 4
+        assert score_delta == 4
+        assert slides == {(0, 0): (0, 3), (0, 1): (0, 3)}
+        assert merges == {(0, 3): 4}
+
+    def test_move_up_simple_merge(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [2, 0, 0, 0],
+            [2, 0, 0, 0],
+        ]
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.UP)
+
+        # Then
+        assert moved is True
+        assert game.grid[0][0] == 4
+        assert score_delta == 4
+        assert slides == {(2, 0): (0, 0), (3, 0): (0, 0)}
+        assert merges == {(0, 0): 4}
+
+    def test_move_down_simple_merge(self):
+        # Given
+        game = Game(size=self.GRID_SIZE)
+        game.grid = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [2, 0, 0, 0],
+            [2, 0, 0, 0],
+        ]
+
+        # When
+        moved, slides, merges, score_delta = game.move(Moves.DOWN)
+
+        # Then
+        assert moved is True
+        assert game.grid[3][0] == 4
+        assert score_delta == 4
+        assert slides == {(2, 0): (3, 0), (3, 0): (3, 0)}
+        assert merges == {(3, 0): 4}
+
     # def test_move_left_simple(self):
     #     game = Game(size=4)
     #     game.grid = [
