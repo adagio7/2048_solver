@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from ..models import Moves, Grid
 
 class Solver(ABC):
-    name: str = "Solver"
+    name: str
 
     @abstractmethod
     def get_move(self, game_state: Grid) -> Moves:
