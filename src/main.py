@@ -1,16 +1,59 @@
 import pygame
+import random
+import argparse
 
 from .constants import *
 from .controller import GameController
 
-if __name__ == "__main__":
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description='2048 Game with different player options')
+    
+    # Add player type argument
+    parser.add_argument(
+        '--player', 
+        type=str, 
+        default='human',
+        choices=['human', 'random', 'minimax', 'expectimax', 'mcts'],
+        help='Player type (default: human)'
+    )
+    
+    parser.add_argument(
+        '--seed', 
+        type=int,
+        help='Random seed for reproducibility'
+    )
+    
+    return parser.parse_args()
+
+def main():
+    """Main entry point for the 2048 game."""
+    args = parse_arguments()
+    
+    # Initialize pygame
     pygame.init()
-
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
-    controller = GameController(screen)
+    pygame.display.set_caption("2048")
+    
+    # Set random seed if provided
+    if args.seed:
+        random.seed(args.seed)
+    
+    # Create the appropriate controller based on player type
+    if args.player == 'human':
+        controller = GameController(screen)
+    else:
+        controller = GameController(
+            screen=screen,
+            player_type=args.player,
+        )
+    
+    # Run the game
     final_score = controller.run()
-
-    print(f"Final score: {final_score}")
+    
+    print(f"Game over! Final score: {final_score}")
     pygame.quit()
+
+if __name__ == "__main__":
+    main()
 
