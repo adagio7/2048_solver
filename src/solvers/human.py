@@ -1,5 +1,7 @@
 from .solver import Solver
+from .registry import SolverRegistry
 
+@SolverRegistry.register
 class HumanSolver(Solver):
     name = "Human"
 
