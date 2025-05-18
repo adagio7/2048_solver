@@ -1,7 +1,7 @@
 from random import choice, random
 
-from .constants import GRID_SIZE
-from .models import Moves, Grid, Row, Coords, AnimationSlides, AnimationMerges
+from ..constants import GRID_SIZE
+from ..models import Moves, Grid, Row, Coords, AnimationSlides, AnimationMerges
 
 
 class Game:

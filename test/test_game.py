@@ -1,5 +1,7 @@
 import pytest
-from src.game import Game, Moves
+
+from src.models import Moves
+from src.game.game import Game
 
 
 class TestGameLogic:

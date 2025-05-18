@@ -3,7 +3,7 @@ import random
 import argparse
 
 from .constants import *
-from .controller import GameController
+from .game.controller import GameController
 from .solvers.registry import SolverRegistry
 
 def parse_arguments():

@@ -2,8 +2,8 @@ import pygame
 
 from .game import Game
 from .animator import Animator
-from .constants import *
-from .models import Moves
+from ..constants import *
+from ..models import Moves
 
 class GameController:
     def __init__(self, screen: pygame.Surface):
