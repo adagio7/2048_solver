@@ -4,17 +4,19 @@ import argparse
 
 from .constants import *
 from .controller import GameController
+from .solvers.registry import SolverRegistry
 
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description='2048 Game with different player options')
+    solvers = SolverRegistry.list_solvers()
     
     # Add player type argument
     parser.add_argument(
         '--player', 
         type=str, 
         default='human',
-        choices=['human', 'random', 'minimax', 'expectimax', 'mcts'],
+        choices=solvers,
         help='Player type (default: human)'
     )
     

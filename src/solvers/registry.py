@@ -1,6 +1,6 @@
-from solver import Solver
+from .solver import Solver
 
-from typing import Dict
+from typing import Dict, List
 
 class SolverRegistry:
     """
@@ -31,8 +31,8 @@ class SolverRegistry:
         return cls._solvers[name]
 
     @classmethod
-    def list_solvers(cls) -> Dict[str, Solver]:
+    def list_solvers(cls) -> List[str]:
         """
         List all registered solvers.
         """
-        return cls._solvers
+        return list(cls._solvers.keys())
