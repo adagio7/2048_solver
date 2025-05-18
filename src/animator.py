@@ -32,6 +32,7 @@ class Animator:
         self.cell_center_fn = cell_center_fn
         self.slides: List[Slides] = []
         self.pops: List[Pops] = []
+        self.grid_snapshot = None
 
     @property
     def slides_running(self):
@@ -49,12 +50,14 @@ class Animator:
         self,
         grid: list[list[int]],
         moves: dict[tuple[int,int], tuple[int,int]],
-        duration: float = 150
+        duration: float = 50
     ):
         """
         Start a slide animation for the given grid.
         """
         self.slides.clear()
+        self.grid_snapshot = [row.copy() for row in grid]
+
         for start, end in moves.items():
             value = grid[start[0]][start[1]]
 
@@ -74,7 +77,7 @@ class Animator:
         self,
         grid: list[list[int]],
         merges: dict[tuple[int,int], int],
-        duration: float = 100
+        duration: float = 50
     ):
         self.pops.clear()
         for coords, value in merges.items():
@@ -99,6 +102,7 @@ class Animator:
 
     def draw(self, grid):
         """Draw the animation by iterating over the slides and pops."""
+        source_grid = self.grid_snapshot or grid
 
         # Avoid drawing over the slides and pops
         busy = {
@@ -108,10 +112,10 @@ class Animator:
         }
 
         # Draw tiles that are unmoved / unaffected
-        for j,row in enumerate(grid):
-            for i,val in enumerate(row):
-                if val and (i,j) not in busy:
-                    center = self.cell_center_fn(i,j)
+        for r,row in enumerate(source_grid):
+            for c,val in enumerate(row):
+                if val and (r, c) not in busy:
+                    center = self.cell_center_fn(r, c)
                     self.draw_tile_fn(val, center, 1.0)
 
         for s in self.slides:
