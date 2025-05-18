@@ -1,16 +1,16 @@
-import random
+from random import choice, random
 
 from .constants import GRID_SIZE
-from .models import Moves
+from .models import Moves, Grid, Row, Coords, AnimationSlides, AnimationMerges
 
 
 class Game:
     SPAWN_2_PROB = 0.9
     EMPTY_CELL_CONTENT = 0
 
-    def __init__(self, size=GRID_SIZE):
+    def __init__(self, size: int = GRID_SIZE):
         self.size = size
-        self.grid = [[self.EMPTY_CELL_CONTENT] * self.size for _ in range(self.size)]
+        self.grid: Grid = [[self.EMPTY_CELL_CONTENT] * self.size for _ in range(self.size)]
         self.score = 0
         self.game_over = False
 
@@ -18,7 +18,7 @@ class Game:
         self._add_random_tile()
         self._add_random_tile()
 
-    def _get_empty_cells(self) -> list[tuple[int, int]]:
+    def _get_empty_cells(self) -> list[Coords]:
         """
         Returns a list of (row, col) tuples for all empty cells in the grid.
         """
@@ -42,17 +42,17 @@ class Game:
             # self.game_over = True # Game over is checked by check_game_over()
             return False
 
-        (r, c) = random.choice(empty_cells)
-        self.grid[r][c] = 2 if random.random() < self.SPAWN_2_PROB else 4
+        (r, c) = choice(empty_cells)
+        self.grid[r][c] = 2 if random() < self.SPAWN_2_PROB else 4
 
         return True
 
-    def __str__(self):
+    def __str__(self) -> str:
         """ For debugging purposes """
         return '\n'.join(['\t'.join(map(str, row)) for row in self.grid])
 
 
-    def move(self, direction: Moves):
+    def move(self, direction: Moves) -> tuple[bool, AnimationSlides, AnimationMerges, int]:
         """
         Handles a move in the specified direction ('left', 'right', 'up', 'down').
         Returns a tuple: (moved: bool, animation_moves: dict, animation_merges: dict, score_delta: int)
@@ -160,7 +160,7 @@ class Game:
             
         return moved, animation_moves, animation_merges, score_delta
 
-    def _process_row_left(self, line: list[int]) -> tuple[list[int], dict[int, int], dict[int, int], int]:
+    def _process_row_left(self, line: Row)-> tuple[Row, dict[int, int], dict[int, int], int]:
         """
         Processes a single row for a left move:
             slides tiles, merges, and returns the new line.

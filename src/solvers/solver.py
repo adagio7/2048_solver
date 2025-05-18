@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import List
 
-from ..models import Moves
+from ..models import Moves, Grid
 
 class Solver(ABC):
     name: str = "Solver"
 
-    def get_move(self, game_state: List[int]) -> Moves:
+    @abstractmethod
+    def get_move(self, game_state: Grid) -> Moves:
         """
         Get the next move for the given game state.
         

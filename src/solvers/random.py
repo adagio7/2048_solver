@@ -3,7 +3,7 @@ from typing import List
 
 from .solver import Solver
 from .registry import SolverRegistry
-from ..models import Moves
+from ..models import Moves, Grid
 
 @SolverRegistry.register
 class RandomSolver(Solver):
@@ -15,7 +15,7 @@ class RandomSolver(Solver):
     def __init__(self):
         super().__init__()
 
-    def get_move(self, game_state: List[int]) -> Moves:
+    def get_move(self, game_state: Grid)-> Moves:
         """
         Randomly selects a move from the available options.
         
