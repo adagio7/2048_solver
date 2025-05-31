@@ -10,7 +10,7 @@ class RandomSolver(Solver):
     """
     A solver that randomly selects a move from the available options.
     """
-    name = "Random"
+    name = "random"
 
     def __init__(self):
         super().__init__()

@@ -16,7 +16,7 @@ class SolverRegistry:
         name = solver_class.name.lower()
 
         if name in cls._solvers:
-            raise ValueError(f"Solver '{name}' is already registered.")
+            raise KeyError(f"Solver '{name}' is already registered.")
 
         cls._solvers[name] = solver_class
         return solver_class
@@ -27,7 +27,7 @@ class SolverRegistry:
         Retrieve a solver class by its name.
         """
         if name not in cls._solvers:
-            raise ValueError(f"Solver '{name}' is not registered.")
+            raise KeyError(f"Solver '{name}' is not registered.")
 
         return cls._solvers[name]
 
