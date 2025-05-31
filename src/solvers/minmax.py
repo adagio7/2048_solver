@@ -7,23 +7,40 @@ from ..game.game import Game
 @SolverRegistry.register
 class MinMaxSolver(Solver):
     name = "minmax"
-    depth = 3
+    depth = 5
 
     def __init__(self):
         super().__init__()
 
-    def get_move(self, game: Grid) -> Moves:
+    def get_move(self, game_state: Grid) -> Moves:
         """
         Uses the MinMax algorithm to determine the best move for the current game state.
         
         :param game: The current state of the game.
         :return: The next move to be made.
         """
-        # Human players don't generate moves programmatically
-        # Moves come from keyboard input processed by the controller
-        game_copy = Game()
-        game_copy.grid = [row[:] for row in game.grid]
-        return None
+        best_move = None
+        best_score = float('-inf')
+        
+        # Try each possible move
+        for move in list(Moves):
+            # Create a copy of the game to test this move
+            game_copy = Game()
+            game_copy.grid = [row[:] for row in game_state]
+            
+            # Try the move
+            moved, _, _, _ = game_copy.move(move)
+            
+            if moved:
+                # Evaluate this move using minimax (computer's turn next)
+                score = self._minmax(game_copy, self.depth - 1, maximizing_player=False)
+                
+                if score > best_score:
+                    best_score = score
+                    best_move = move
+        
+        return best_move
+
 
     def _get_empty_cells(self, game_state: Grid) -> int:
         """
@@ -113,7 +130,8 @@ class MinMaxSolver(Solver):
         :param maximizing_player: True if the current player is maximizing, False if minimizing.
         :return: An integer score representing the desirability of the state.
         """
-        if depth == 0 or game.is_game_over():
+        print(f"MinMax depth: {depth}, maximizing_player: {maximizing_player}")
+        if depth == 0 or game.check_game_over():
             return self._evaluate(game.grid)
 
         if maximizing_player:
@@ -125,7 +143,7 @@ class MinMaxSolver(Solver):
             return max_eval
         else:
             min_eval = float('inf')
-            for move in game.get_possible_moves():
+            for move in list(Moves):
                 game.move(move)
                 eval = self._minmax(game, depth - 1, not maximizing_player)
                 min_eval = min(min_eval, eval)
