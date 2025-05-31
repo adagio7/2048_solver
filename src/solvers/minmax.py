@@ -33,7 +33,13 @@ class MinMaxSolver(Solver):
             
             if moved:
                 # Evaluate this move using minimax (computer's turn next)
-                score = self._minmax(game_copy, self.depth - 1, maximizing_player=False)
+                score = self._minmax(
+                    game_copy,
+                    self.depth - 1,
+                    alpha=float('-inf'),
+                    beta=float('inf'),
+                    maximizing_player=False
+                )
                 
                 if score > best_score:
                     best_score = score
@@ -121,16 +127,25 @@ class MinMaxSolver(Solver):
         
         return empty_value + mono_value + smooth_value
 
-    def _minmax(self, game: Game, depth: int, maximizing_player: bool) -> int:
+    def _minmax(
+            self,
+            game: Game,
+            depth: int,
+            alpha: float,
+            beta: float,
+            maximizing_player: bool
+        ) -> int:
         """
-        MinMax algorithm to evaluate the game state.
+        MinMax algorithm (with alpha-beta pruning) to evaluate the game state.
         
         :param game: The current state of the game.
         :param depth: The depth of the search tree.
+        :param alpha: The best score that the maximizer currently can guarantee at that level or above.
+        :param beta: The best score that the minimizer currently can guarantee at that level or above.
         :param maximizing_player: True if the current player is maximizing, False if minimizing.
+
         :return: An integer score representing the desirability of the state.
         """
-        print(f"MinMax depth: {depth}, maximizing_player: {maximizing_player}")
         if depth == 0 or game.check_game_over():
             return self._evaluate(game.grid)
 
@@ -141,8 +156,12 @@ class MinMaxSolver(Solver):
                 moved, _, _, _ = game_copy.move(move)
 
                 if moved:
-                    eval = self._minmax(game_copy, depth - 1, not maximizing_player)
+                    eval = self._minmax(game_copy, depth - 1, alpha, beta, not maximizing_player)
                     max_eval = max(max_eval, eval)
+                    alpha = max(alpha, eval)
+
+                    if beta <= alpha:
+                        break
 
             return max_eval
         else:
@@ -156,13 +175,21 @@ class MinMaxSolver(Solver):
                 # Try placing a 2 tile in each empty cell
                 game_copy = game.clone()
                 game_copy.grid[r][c] = 2
-                eval = self._minmax(game_copy, depth - 1, not maximizing_player)
+                eval = self._minmax(game_copy, depth - 1, alpha, beta, not maximizing_player)
                 min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
 
+            for r, c in empty_cells:
                 # Try placing a 4 tile
                 game_copy = game.clone()
                 game_copy.grid[r][c] = 4
-                eval = self._minmax(game_copy, depth - 1, not maximizing_player)
+                eval = self._minmax(game_copy, depth - 1, alpha, beta, not maximizing_player)
                 min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+
+                if beta <= alpha:
+                    break
 
             return min_eval
