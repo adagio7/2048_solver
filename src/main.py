@@ -11,13 +11,13 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='2048 Game with different player options')
     solvers = SolverRegistry.list_solvers()
     
-    # Add player type argument
+    # Add agent type argument
     parser.add_argument(
-        '--player', 
+        '--agent', 
         type=str, 
         default='human',
         choices=solvers,
-        help='Player type (default: human)'
+        help='Agent type (default: human)'
     )
     
     parser.add_argument(
@@ -41,7 +41,7 @@ def main():
     if args.seed:
         random.seed(args.seed)
     
-    solver = SolverRegistry.get_solver(args.player)()
+    solver = SolverRegistry.get_solver(args.agent)()
     print(f"Using solver: {solver.name}")
     controller = GameController(screen, solver)
 
