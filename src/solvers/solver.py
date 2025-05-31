@@ -5,6 +5,9 @@ from ..models import Moves, Grid
 class Solver(ABC):
     name: str
 
+    def __repr__(self):
+        return f"<Solver: {self.name}>"
+
     @abstractmethod
     def get_move(self, game_state: Grid) -> Moves:
         """
