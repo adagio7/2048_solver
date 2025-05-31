@@ -2,7 +2,7 @@ import pytest
 
 from src.solvers.minmax import MinMaxSolver
 
-class TestMinMaxSolver:
+class TestEvalHeuristics:
     GRID_SIZE = 4
 
     def test_get_empty_cells_completely_empty_grid(self):
