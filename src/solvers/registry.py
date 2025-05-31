@@ -9,7 +9,7 @@ class SolverRegistry:
     _solvers: Dict[str, Solver] = {}
 
     @classmethod
-    def register(cls, solver_class: Solver) -> None:
+    def register(cls, solver_class: Solver) -> Solver:
         """
         Register a solver class with a given name.
         """
@@ -19,6 +19,7 @@ class SolverRegistry:
             raise ValueError(f"Solver '{name}' is already registered.")
 
         cls._solvers[name] = solver_class
+        return solver_class
 
     @classmethod
     def get_solver(cls, name: str) -> Solver:
