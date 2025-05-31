@@ -7,7 +7,7 @@ from ..game.game import Game
 @SolverRegistry.register
 class MinMaxSolver(Solver):
     name = "minmax"
-    depth = 5
+    depth = 3
 
     def __init__(self):
         super().__init__()
@@ -137,14 +137,32 @@ class MinMaxSolver(Solver):
         if maximizing_player:
             max_eval = float('-inf')
             for move in list(Moves):
-                game.move(move)
-                eval = self._minmax(game, depth - 1, not maximizing_player)
-                max_eval = max(max_eval, eval)
+                game_copy = game.clone()
+                moved, _, _, _ = game_copy.move(move)
+
+                if moved:
+                    eval = self._minmax(game_copy, depth - 1, not maximizing_player)
+                    max_eval = max(max_eval, eval)
+
             return max_eval
         else:
             min_eval = float('inf')
-            for move in list(Moves):
-                game.move(move)
-                eval = self._minmax(game, depth - 1, not maximizing_player)
+
+            empty_cells = game._get_empty_cells()
+
+            # TODO: Can prune the empty cells for performance?
+
+            for r, c in empty_cells:
+                # Try placing a 2 tile in each empty cell
+                game_copy = game.clone()
+                game_copy.grid[r][c] = 2
+                eval = self._minmax(game_copy, depth - 1, not maximizing_player)
                 min_eval = min(min_eval, eval)
+
+                # Try placing a 4 tile
+                game_copy = game.clone()
+                game_copy.grid[r][c] = 4
+                eval = self._minmax(game_copy, depth - 1, not maximizing_player)
+                min_eval = min(min_eval, eval)
+
             return min_eval
