@@ -230,3 +230,16 @@ class Game:
                     return False
         # self.game_over = True # Game.move will set this if applicable
         return True
+
+    def clone(self) -> 'Game':
+        """
+        Returns a deep copy of the current game state.
+        Useful for solvers to evaluate different game states without modifying the original.
+
+        :return: A new Game instance with the same state and score
+        """
+        new_game = Game(self.size)
+        new_game.grid = [row[:] for row in self.grid]
+        new_game.score = self.score
+        new_game.game_over = self.game_over
+        return new_game
