@@ -18,8 +18,8 @@ class HumanSolver(Solver):
         Instead, the controller processes keyboard input directly.
         
         :param game_state: The current state of the game.
-        :return: Always returns None for human players.
         """
+        # Avoid getting pygame events, as it consumes the event queue
         keys = pygame.key.get_pressed()
     
         if keys[pygame.K_UP] or keys[pygame.K_w]:
