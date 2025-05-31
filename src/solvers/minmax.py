@@ -1,3 +1,5 @@
+import random
+
 from .solver import Solver
 from .registry import SolverRegistry
 
@@ -169,7 +171,8 @@ class MinMaxSolver(Solver):
 
             empty_cells = game._get_empty_cells()
 
-            # TODO: Can prune the empty cells for performance?
+            # Randomly sample to limit search space
+            # empty_cells = random.sample(empty_cells, min(len(empty_cells), 8))
 
             for r, c in empty_cells:
                 # Try placing a 2 tile in each empty cell
