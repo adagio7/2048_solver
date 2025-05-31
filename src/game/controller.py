@@ -80,31 +80,28 @@ class GameController:
             # Check if game is over after the move
             self.game_over = self.game.check_game_over()
         
-        self.ready_for_input = True
+        # self.ready_for_input = True
             
         return moved
     
-    def handle_input(self) -> bool:
-        """Handle keyboard input."""
+    def handle_game_input(self) -> bool:
+        """
+        Handle user input for the game.
+
+        Handles ESCAPE, 'N' for new game
+        Returns True if the game should continue running, False to exit."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
                 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return False
-                    
                 # Only process move keys if we're ready
                 if self.ready_for_input and not self.animator.is_animating:
                     match event.key:
-                        case pygame.K_LEFT | pygame.K_a:
-                            self.handle_move(Moves.LEFT)
-                        case pygame.K_RIGHT | pygame.K_d:
-                            self.handle_move(Moves.RIGHT)
-                        case pygame.K_UP | pygame.K_w:
-                            self.handle_move(Moves.UP)
-                        case pygame.K_DOWN | pygame.K_s:
-                            self.handle_move(Moves.DOWN)
+                        case pygame.K_ESCAPE:
+                            # Exit the game
+                            return False
+
                         case pygame.K_n:
                             # New game
                             self.game = Game()
