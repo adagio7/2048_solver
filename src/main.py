@@ -41,15 +41,10 @@ def main():
     if args.seed:
         random.seed(args.seed)
     
-    # Create the appropriate controller based on player type
-    if args.player == 'human':
-        controller = GameController(screen)
-    else:
-        controller = GameController(
-            screen=screen,
-            player_type=args.player,
-        )
-    
+    solver = SolverRegistry.get_solver(args.player)()
+    print(f"Using solver: {solver.name}")
+    controller = GameController(screen, solver)
+
     # Run the game
     final_score = controller.run()
     

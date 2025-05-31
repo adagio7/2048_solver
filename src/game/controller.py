@@ -4,10 +4,14 @@ from .game import Game
 from .animator import Animator
 from ..constants import *
 from ..models import Moves
+from ..solvers.solver import Solver
 
 class GameController:
-    def __init__(self, screen: pygame.Surface):
+    def __init__(self, screen: pygame.Surface, solver: Solver):
         self.screen = screen
+        self.solver = solver
+
+        # Initialize game state
         self.game = Game()
         self.font = pygame.font.SysFont('Arial', 24)
         self.big_font = pygame.font.SysFont('Arial', 48)
@@ -189,8 +193,16 @@ class GameController:
         running = True
         
         while running:
-            # Handle input
-            running = self.handle_input()
+            # Handle meta inputs (quit, new game)
+            running = self.handle_game_input()
+            if not running:
+                break
+
+            move = self.solver.get_move(self.game.grid)
+
+            # Handle player move
+            moved = self.handle_move(move)
+            # assert moved, "Move must be valid and result in a change in game state"
             
             # Update game state
             self.update()
