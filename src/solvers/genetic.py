@@ -1,4 +1,5 @@
 import random
+import argparse
 import json
 
 from typing import List, Tuple, Dict
@@ -6,6 +7,55 @@ from typing import List, Tuple, Dict
 from ..models import Moves, Grid
 from ..game.game import Game
 
+def parse_arguments():
+    """Parse command line arguments for HeuristicEvolution parameters."""
+    parser = argparse.ArgumentParser(
+        description='Evolve optimal heuristic weights for 2048 solvers using genetic algorithms',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    
+    parser.add_argument(
+        '--population-size', '-p',
+        type=int,
+        default=30,
+        help='Size of the population for genetic algorithm'
+    )
+    
+    parser.add_argument(
+        '--generations', '-g',
+        type=int,
+        default=20,
+        help='Number of generations to evolve'
+    )
+    
+    parser.add_argument(
+        '--mutation-rate', '-m',
+        type=float,
+        default=0.15,
+        help='Mutation rate (0.0 to 1.0)'
+    )
+    
+    parser.add_argument(
+        '--elite-size', '-e',
+        type=int,
+        default=5,
+        help='Number of elite individuals to preserve each generation'
+    )
+    
+    parser.add_argument(
+        '--save-results', '-s',
+        action='store_true',
+        help='Save evolution results to JSON file'
+    )
+    
+    parser.add_argument(
+        '--output-file', '-o',
+        type=str,
+        default='evolution_results.json',
+        help='Output file name for results (when --save-results is used)'
+    )
+    
+    return parser.parse_args()
 
 class HeuristicEvolution:
     """
@@ -14,10 +64,10 @@ class HeuristicEvolution:
     
     def __init__(
             self,
-            population_size: int = 30,
-            generations: int = 20,
-            mutation_rate: float = 0.15,
-            elite_size: int = 5
+            population_size: int,
+            generations: int,
+            mutation_rate: float,
+            elite_size: int
         ):
         self.population_size = population_size
         self.generations = generations
@@ -263,11 +313,29 @@ class HeuristicEvolution:
         return 1.0 if max_value in corners else 0.0
 
 if __name__ == "__main__":
-    # Example usage
-    evolution = HeuristicEvolution()
+    args = parse_arguments()
+
+    # Args Validation
+    if not (0.0 <= args.mutation_rate <= 1.0):
+        print("Error: Mutation rate must be between 0.0 and 1.0")
+        exit(1)
+    
+    if args.elite_size >= args.population_size:
+        print("Error: Elite size must be smaller than population size")
+        exit(1)
+
+    evolution = HeuristicEvolution(
+        population_size=args.population_size,
+        generations=args.generations,
+        mutation_rate=args.mutation_rate,
+        elite_size=args.elite_size
+    )
     results = evolution.evolve_weights()
     
     print("Best Weights:", results['best_weights'])
     print("Best Fitness:", results['best_fitness'])
-    # print("Evolution History:", json.dumps(results, indent=2))
-    
+
+    if args.save_results:
+        with open(args.output_file, 'w') as f:
+            json.dump(results, f, indent=2)
+        print(f"Results saved to {args.output_file}")
