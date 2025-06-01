@@ -2,9 +2,12 @@ import pygame
 
 from .game import Game
 from .animator import Animator
-from ..constants import *
 from ..models import Moves
 from ..solvers.solver import Solver
+from ..constants import (
+    WIDTH, HEIGHT, CELL_SIZE, CELL_PADDING, BOARD_PADDING,
+    TILE_COLORS, Colours
+)
 
 class GameController:
     def __init__(self, screen: pygame.Surface, solver: Solver):
@@ -198,8 +201,7 @@ class GameController:
             move = self.solver.get_move(self.game.grid)
 
             # Handle player move
-            moved = self.handle_move(move)
-            # assert moved, "Move must be valid and result in a change in game state"
+            self.handle_move(move)
             
             # Update game state
             self.update()

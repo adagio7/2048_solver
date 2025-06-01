@@ -1,4 +1,3 @@
-import random
 
 from .solver import Solver
 from .registry import SolverRegistry

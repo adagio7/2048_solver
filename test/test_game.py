@@ -1,4 +1,3 @@
-import pytest
 
 from src.models import Moves
 from src.game.game import Game
@@ -159,32 +158,6 @@ class TestGameLogic:
         assert slides == expected_slides_actual
         assert merges == expected_merges_actual
         assert score_delta == score_delta_actual
-
-    def test_move_left_no_move(self):
-        # Given
-        game = Game(size=self.GRID_SIZE)
-        game.grid = [
-            [2, 4, 8, 16],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0]
-        ]
-        game.score = 0
-
-        # When
-        moved, slides, merges, score_delta = game.move(Moves.LEFT)
-
-        # Then
-        assert moved is False
-        assert game.grid == [
-            [2, 4, 8, 16],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0]
-        ]
-        assert game.score == 0
-        assert slides == {}
-        assert merges == {}
 
     def test_move_left_no_move(self):
         # Given

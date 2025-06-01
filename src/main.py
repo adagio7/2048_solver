@@ -2,7 +2,7 @@ import pygame
 import random
 import argparse
 
-from .constants import *
+from .constants import (WIDTH, HEIGHT)
 from .game.controller import GameController
 from .solvers.registry import SolverRegistry
 

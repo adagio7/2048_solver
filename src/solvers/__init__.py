@@ -3,8 +3,7 @@
 # we need to ensure that the registry is populated before any solvers are imported.
 
 # First, make sure the registry is imported
-from .registry import SolverRegistry
-from .solver import Solver
+__all__ = ['Solver', 'SolverRegistry']
 
 # Then dynamically import all modules in this package
 import pkgutil

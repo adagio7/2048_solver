@@ -3,7 +3,7 @@ import random
 from unittest.mock import patch, MagicMock
 
 from src.solvers.genetic import HeuristicEvolution
-from src.models import Moves, Grid
+from src.models import Moves
 
 class TestHeuristicEvolution:
     def test_initialize_population(self):
